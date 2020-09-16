@@ -330,18 +330,31 @@ namespace MissileCommand
         }
     }
 
-    class PlayerCursor
+    class GameObject
+    {
+        public virtual void Draw()
+        {
+
+        }
+
+        public virtual void Update()
+        {
+
+        }
+    }
+
+    class PlayerCursor : GameObject
     {
         public Vector2 pos = new Vector2();
         Vector2 size = new Vector2(15, 5);
 
-        public void Update()
+        public override void Update()
         {
             Vector2 mPos = GetMousePosition();
             pos = mPos;
         }
 
-        public void Draw()
+        public override void Draw()
         {
             DrawRectangleV(pos, size, PURPLE);
             DrawRectangleV(pos - new Vector2(size.X - size.Y, 0), size, PURPLE);
@@ -350,7 +363,7 @@ namespace MissileCommand
         }
     }
 
-    class Launcher
+    class Launcher : GameObject
     {
         public Vector2 pos;
         public float speed;
@@ -371,13 +384,13 @@ namespace MissileCommand
         //used only for checking position
         public Vector2 size = new Vector2(20, 10);
         Raylib_cs.Color color = new Raylib_cs.Color(40, 200, 0, 255);
-        public void Draw()
+        public override void Draw()
         {
             DrawRectangleV(pos, size, color);
         }
     }
 
-    class Projectile
+    class Projectile : GameObject
     {
         public Vector2 pos;
         float speed;
@@ -403,7 +416,7 @@ namespace MissileCommand
             active = true;
         }
 
-        public void Update()
+        public override void Update()
         {
             if (!exploding)
             {
@@ -429,7 +442,7 @@ namespace MissileCommand
 
         }
 
-        public void Draw()
+        public override void Draw()
         {
             if (!exploding)
             {
@@ -442,7 +455,7 @@ namespace MissileCommand
         }
     }
 
-    class Location
+    class Location : GameObject
     {
         public bool destroyed;
         public Vector2 pos;
@@ -453,7 +466,7 @@ namespace MissileCommand
             destroyed = false;
         }
 
-        public void Draw()
+        public override void Draw()
         {
             if (!destroyed)
             {
@@ -467,7 +480,7 @@ namespace MissileCommand
         }
     }
 
-    class Incoming
+    class Incoming : GameObject
     {
         public Vector2 pos;
         public Vector2 target;
@@ -485,12 +498,12 @@ namespace MissileCommand
             direction = new Vector2(v.X / v.Length(), v.Y / v.Length());
         }
 
-        public void Update()
+        public override void Update()
         {
             pos -= new Vector2(direction.X * speed, direction.Y * speed);
         }
 
-        public void Draw()
+        public override void Draw()
         {
             DrawCircleV(pos, 5, RAYWHITE);
         }
