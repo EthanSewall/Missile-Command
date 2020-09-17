@@ -85,20 +85,23 @@ namespace MissileCommand
                         }
                     }//updates projectiles that are still active, removes ones that aren't
                     {
-                        if (IsKeyPressed(Raylib_cs.KeyboardKey.KEY_ONE) && launcher1.remaining > 0)
+                        if (!(loc1.destroyed && loc2.destroyed && loc3.destroyed && loc4.destroyed && loc5.destroyed && loc6.destroyed))
                         {
-                            projectiles.Add(new Projectile(launcher1.speed, launcher1.pos, GetMousePosition()));
-                            launcher1.remaining--;
-                        }
-                        if (IsKeyPressed(Raylib_cs.KeyboardKey.KEY_TWO) && launcher2.remaining > 0)
-                        {
-                            projectiles.Add(new Projectile(launcher2.speed, launcher2.pos, GetMousePosition()));
-                            launcher2.remaining--;
-                        }
-                        if (IsKeyPressed(Raylib_cs.KeyboardKey.KEY_THREE) && launcher3.remaining > 0)
-                        {
-                            projectiles.Add(new Projectile(launcher3.speed, launcher3.pos, GetMousePosition()));
-                            launcher3.remaining--;
+                            if (IsKeyPressed(Raylib_cs.KeyboardKey.KEY_ONE) && launcher1.remaining > 0)
+                            {
+                                projectiles.Add(new Projectile(launcher1.speed, launcher1.pos, GetMousePosition()));
+                                launcher1.remaining--;
+                            }
+                            if (IsKeyPressed(Raylib_cs.KeyboardKey.KEY_TWO) && launcher2.remaining > 0)
+                            {
+                                projectiles.Add(new Projectile(launcher2.speed, launcher2.pos, GetMousePosition()));
+                                launcher2.remaining--;
+                            }
+                            if (IsKeyPressed(Raylib_cs.KeyboardKey.KEY_THREE) && launcher3.remaining > 0)
+                            {
+                                projectiles.Add(new Projectile(launcher3.speed, launcher3.pos, GetMousePosition()));
+                                launcher3.remaining--;
+                            }
                         }
                     }// spawns projectiles on key press
 
@@ -114,6 +117,7 @@ namespace MissileCommand
                                 inbound.RemoveAt(i);
                                 score += 10;
                                 cont = true;
+                                Console.Beep(180, 75);
                             }
                         }
                         if (cont)
@@ -153,7 +157,7 @@ namespace MissileCommand
                         }
                     }//updates Incomings, checks if they've been intercepted
                     incomingTime += GetFrameTime();
-                    if (incomingTime > incomingDelay)
+                    if (incomingTime > incomingDelay)// generates Incomings
                     {
                         Random random = new Random();
                         int incomingTarget = random.Next(1, 7);
@@ -213,6 +217,7 @@ namespace MissileCommand
                             }
                             incomingTime = 0;
                             remainingIncoming--;
+                            Console.Beep(90, 75);
                         }
                         else if (!(loc1.destroyed && loc2.destroyed && loc3.destroyed && loc4.destroyed && loc5.destroyed && loc6.destroyed) && remainingIncoming == 0)
                         {
@@ -477,6 +482,7 @@ namespace MissileCommand
         public void Destroy()
         {
             destroyed = true;
+            Console.Beep(90, 75);
         }
     }
 
