@@ -29,6 +29,7 @@ namespace MissileCommand
             bool stillGoing = true;
             Raylib_cs.Color background = new Raylib_cs.Color(200, 40, 0, 255);
 
+            //declaring objects to exist
             PlayerCursor player = new PlayerCursor();
             Launcher launcher1 = new Launcher(10, new Vector2(130, screenHeight - 150));
             Launcher launcher2 = new Launcher(20, new Vector2(screenWidth / 2 - 10, screenHeight - 175));
@@ -50,8 +51,29 @@ namespace MissileCommand
             float incomingDelay = 3f;
             bool inGame = false;
 
+
             while (!WindowShouldClose() && stillGoing)  // Game loop continues until ESC pressed, window closed, or the boolean becomes false
             {
+                List<GameObject> gameObjects = new List<GameObject>();
+                {
+                    {
+                        gameObjects.Add(loc1);
+                        gameObjects.Add(loc2);
+                        gameObjects.Add(loc3);
+                        gameObjects.Add(loc4);
+                        gameObjects.Add(loc5);
+                        gameObjects.Add(loc6);
+                    }
+                    foreach (Projectile pro in projectiles)
+                    {
+                        gameObjects.Add(pro);
+                    }
+                    foreach (Incoming IN in inbound)
+                    {
+                        gameObjects.Add(IN);
+                    }
+                }//fills the list
+
                 BeginDrawing();
                 ClearBackground(BLACK);
                 DrawBackground(currentLevel, background, score);
@@ -66,24 +88,18 @@ namespace MissileCommand
                         loc5.Draw();
                         loc6.Draw();
                     }// draws the locations
-
                     {
                         launcher1.DisplayText();
                         launcher2.DisplayText();
                         launcher3.DisplayText();
-                    }//displays remaining projectiles
+                    }//displays remaining projectiles on the launchers
                     for (int i = 0; i < projectiles.Count; i++)
                     {
-                        if (projectiles[i].active)
-                        {
-                            projectiles[i].Update();
-                            projectiles[i].Draw();
-                        }
-                        else
+                        if (!projectiles[i].active)
                         {
                             projectiles.RemoveAt(i);
                         }
-                    }//updates projectiles that are still active, removes ones that aren't
+                    }//removes projectiles no longer active
                     {
                         if (!(loc1.destroyed && loc2.destroyed && loc3.destroyed && loc4.destroyed && loc5.destroyed && loc6.destroyed))
                         {
@@ -105,10 +121,14 @@ namespace MissileCommand
                         }
                     }// spawns projectiles on key press
 
+                    foreach(GameObject g in gameObjects)
+                    {
+                        g.Update();
+                        g.Draw();
+                    }//draws and updates the list
+
                     for (int i = 0; i < inbound.Count; i++)
                     {
-                        inbound[i].Update();
-                        inbound[i].Draw();
                         bool cont = false;
                         foreach (Projectile pro in projectiles)
                         {
@@ -155,9 +175,10 @@ namespace MissileCommand
                                     break;
                             }
                         }
-                    }//updates Incomings, checks if they've been intercepted
+                    }//checks if incomings are intercepted
+
                     incomingTime += GetFrameTime();
-                    if (incomingTime > incomingDelay)// generates Incomings
+                    if (incomingTime > incomingDelay)
                     {
                         Random random = new Random();
                         int incomingTarget = random.Next(1, 7);
@@ -298,12 +319,12 @@ namespace MissileCommand
                             }
 
                         }//advancing levels
-                    }
+                    }//generates Incomings, ends level if the allotted number have been spawned
 
                     if (loc1.destroyed && loc2.destroyed && loc3.destroyed && loc4.destroyed && loc5.destroyed && loc6.destroyed)
                     {
                         DrawText("GAME END", (screenWidth / 2) - 500, (screenHeight / 2) - 100, 200, new Raylib_cs.Color(100, 0, 0, 255));
-                    }
+                    }//the game over screen
                 }
                 else
                 {
@@ -311,7 +332,7 @@ namespace MissileCommand
                     {
                         inGame = true;
                     }
-                }
+                }//game hasn't started yet
 
 
                 player.Update();
@@ -333,7 +354,7 @@ namespace MissileCommand
             DrawText("Level: " + level.ToString(), 0, 0, 40, YELLOW);
             DrawText(score.ToString(), screenWidth / 2, 0, 40, YELLOW);
         }
-    }
+    }//contains Main
 
     class GameObject
     {
@@ -346,7 +367,7 @@ namespace MissileCommand
         {
 
         }
-    }
+    }//for update and draw overriding
 
     class PlayerCursor : GameObject
     {
@@ -366,34 +387,24 @@ namespace MissileCommand
             DrawRectangleV(pos - new Vector2(0, size.X - size.Y), new Vector2(size.Y, size.X), PURPLE);
             DrawRectangleV(pos, new Vector2(size.Y, size.X), PURPLE);
         }
-    }
+    }//where the projectiles shoot at
 
     class Launcher : GameObject
     {
         public Vector2 pos;
         public float speed;
         public int remaining;
-
         public Launcher(float newSpeed, Vector2 newPos)
         {
             pos = newPos;
             speed = newSpeed;
             remaining = 10;
         }
-
         public void DisplayText()
         {
             DrawText(remaining.ToString(), (int)pos.X - 10, (int)pos.Y, 50, YELLOW);
         }
-
-        //used only for checking position
-        public Vector2 size = new Vector2(20, 10);
-        Raylib_cs.Color color = new Raylib_cs.Color(40, 200, 0, 255);
-        public override void Draw()
-        {
-            DrawRectangleV(pos, size, color);
-        }
-    }
+    }//where the projectiles shoot from
 
     class Projectile : GameObject
     {
@@ -492,6 +503,8 @@ namespace MissileCommand
         public Vector2 target;
         Vector2 direction;
         float speed;
+        Vector2 actualTarget;
+        bool redirection = false;
 
         public Incoming(float newSpeed, Vector2 newTarget)
         {
@@ -504,9 +517,29 @@ namespace MissileCommand
             direction = new Vector2(v.X / v.Length(), v.Y / v.Length());
         }
 
+        public Incoming(float newSpeed, Vector2 newTarget, Vector2 realTarget)
+        {
+            speed = newSpeed;
+            target = newTarget;
+            actualTarget = realTarget;
+            redirection = true;
+            Random random = new Random();
+            pos = new Vector2(random.Next(0, 1600), 0);
+
+            Vector2 v = pos - target;
+            direction = new Vector2(v.X / v.Length(), v.Y / v.Length());
+        }
+
         public override void Update()
         {
             pos -= new Vector2(direction.X * speed, direction.Y * speed);
+
+            if(redirection && pos.Y > 450)
+            {
+                Vector2 v = pos - actualTarget;
+                direction = new Vector2(v.X / v.Length(), v.Y / v.Length());
+                redirection = false;
+            }
         }
 
         public override void Draw()
