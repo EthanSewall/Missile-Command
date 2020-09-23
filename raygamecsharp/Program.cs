@@ -48,6 +48,7 @@ namespace MissileCommand
             float incomingSpeed = 4;
             int score = 0;
             float levelTime = 0;
+            int redirectCounter = 0;
             float incomingDelay = 3f;
             bool inGame = false;
 
@@ -147,98 +148,246 @@ namespace MissileCommand
 
                         if (inbound[i].pos.Y > screenHeight - 125)
                         {
-                            switch (inbound[i].target.X)
+                            if (!inbound[i].redirected)
                             {
-                                case 300:
-                                    loc1.Destroy();
-                                    inbound.RemoveAt(i);
-                                    break;
-                                case 450:
-                                    loc2.Destroy();
-                                    inbound.RemoveAt(i);
-                                    break;
-                                case 600:
-                                    loc3.Destroy();
-                                    inbound.RemoveAt(i);
-                                    break;
-                                case 1000:
-                                    loc4.Destroy();
-                                    inbound.RemoveAt(i);
-                                    break;
-                                case 1150:
-                                    loc5.Destroy();
-                                    inbound.RemoveAt(i);
-                                    break;
-                                case 1300:
-                                    loc6.Destroy();
-                                    inbound.RemoveAt(i);
-                                    break;
+                                switch (inbound[i].target.X)
+                                {
+                                    case 300:
+                                        loc1.Destroy();
+                                        inbound.RemoveAt(i);
+                                        break;
+                                    case 450:
+                                        loc2.Destroy();
+                                        inbound.RemoveAt(i);
+                                        break;
+                                    case 600:
+                                        loc3.Destroy();
+                                        inbound.RemoveAt(i);
+                                        break;
+                                    case 1000:
+                                        loc4.Destroy();
+                                        inbound.RemoveAt(i);
+                                        break;
+                                    case 1150:
+                                        loc5.Destroy();
+                                        inbound.RemoveAt(i);
+                                        break;
+                                    case 1300:
+                                        loc6.Destroy();
+                                        inbound.RemoveAt(i);
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                switch (inbound[i].actualTarget.X)
+                                {
+                                    case 300:
+                                        loc1.Destroy();
+                                        inbound.RemoveAt(i);
+                                        break;
+                                    case 450:
+                                        loc2.Destroy();
+                                        inbound.RemoveAt(i);
+                                        break;
+                                    case 600:
+                                        loc3.Destroy();
+                                        inbound.RemoveAt(i);
+                                        break;
+                                    case 1000:
+                                        loc4.Destroy();
+                                        inbound.RemoveAt(i);
+                                        break;
+                                    case 1150:
+                                        loc5.Destroy();
+                                        inbound.RemoveAt(i);
+                                        break;
+                                    case 1300:
+                                        loc6.Destroy();
+                                        inbound.RemoveAt(i);
+                                        break;
+                                }
                             }
                         }
-                    }//checks if incomings are intercepted
+                    }//checks if incomings are landed or intercepted 
 
                     incomingTime += GetFrameTime();
                     if (incomingTime > incomingDelay)
                     {
                         Random random = new Random();
                         int incomingTarget = random.Next(1, 7);
+                        int incomingTarget2 = random.Next(1, 7);
+
 
                         bool validTarget = false;
+                        bool validTarget2 = false;
 
                         if (!(loc1.destroyed && loc2.destroyed && loc3.destroyed && loc4.destroyed && loc5.destroyed && loc6.destroyed) && remainingIncoming > 0)
                         {
-                            while (!validTarget)
+                            if (redirectCounter < 100)
                             {
-                                switch (incomingTarget)
+                                while (!validTarget)
                                 {
-                                    case 1:
-                                        if (!loc1.destroyed)
-                                        {
-                                            inbound.Add(new Incoming(incomingSpeed, loc1.pos + new Vector2(25, 0)));
-                                            validTarget = true;
-                                        }
-                                        break;
-                                    case 2:
-                                        if (!loc2.destroyed)
-                                        {
-                                            inbound.Add(new Incoming(incomingSpeed, loc2.pos + new Vector2(25, 0)));
-                                            validTarget = true;
-                                        }
-                                        break;
-                                    case 3:
-                                        if (!loc3.destroyed)
-                                        {
-                                            inbound.Add(new Incoming(incomingSpeed, loc3.pos + new Vector2(25, 0)));
-                                            validTarget = true;
-                                        }
-                                        break;
-                                    case 4:
-                                        if (!loc4.destroyed)
-                                        {
-                                            inbound.Add(new Incoming(incomingSpeed, loc4.pos + new Vector2(25, 0)));
-                                            validTarget = true;
-                                        }
-                                        break;
-                                    case 5:
-                                        if (!loc5.destroyed)
-                                        {
-                                            inbound.Add(new Incoming(4, loc5.pos + new Vector2(25, 0)));
-                                            validTarget = true;
-                                        }
-                                        break;
-                                    case 6:
-                                        if (!loc6.destroyed)
-                                        {
-                                            inbound.Add(new Incoming(4, loc6.pos + new Vector2(25, 0)));
-                                            validTarget = true;
-                                        }
-                                        break;
-                                }//decides where each Incoming is pointed
-                                incomingTarget = random.Next(1, 7);
+                                    switch (incomingTarget)
+                                    {
+                                        case 1:
+                                            if (!loc1.destroyed)
+                                            {
+                                                inbound.Add(new Incoming(incomingSpeed, loc1.pos + new Vector2(25, 0)));
+                                                validTarget = true;
+                                            }
+                                            break;
+                                        case 2:
+                                            if (!loc2.destroyed)
+                                            {
+                                                inbound.Add(new Incoming(incomingSpeed, loc2.pos + new Vector2(25, 0)));
+                                                validTarget = true;
+                                            }
+                                            break;
+                                        case 3:
+                                            if (!loc3.destroyed)
+                                            {
+                                                inbound.Add(new Incoming(incomingSpeed, loc3.pos + new Vector2(25, 0)));
+                                                validTarget = true;
+                                            }
+                                            break;
+                                        case 4:
+                                            if (!loc4.destroyed)
+                                            {
+                                                inbound.Add(new Incoming(incomingSpeed, loc4.pos + new Vector2(25, 0)));
+                                                validTarget = true;
+                                            }
+                                            break;
+                                        case 5:
+                                            if (!loc5.destroyed)
+                                            {
+                                                inbound.Add(new Incoming(incomingSpeed, loc5.pos + new Vector2(25, 0)));
+                                                validTarget = true;
+                                            }
+                                            break;
+                                        case 6:
+                                            if (!loc6.destroyed)
+                                            {
+                                                inbound.Add(new Incoming(incomingSpeed, loc6.pos + new Vector2(25, 0)));
+                                                validTarget = true;
+                                            }
+                                            break;
+                                    }//decides where each Incoming is pointed
+                                    incomingTarget = random.Next(1, 7);
+                                }
+                                incomingTime = 0;
+                                remainingIncoming--;
+                                Console.Beep(90, 75);
+                                redirectCounter += currentLevel * 2;
                             }
-                            incomingTime = 0;
-                            remainingIncoming--;
-                            Console.Beep(90, 75);
+                            else
+                            {
+                                Vector2 vect1 = new Vector2(0,0);
+                                Vector2 vect2 = new Vector2(0,0);
+                                while (!validTarget)
+                                {
+                                    switch (incomingTarget)
+                                    {
+                                        case 1:
+                                            if (!loc1.destroyed)
+                                            {
+                                                vect1 = loc1.pos + new Vector2(25, 0);
+                                                validTarget = true;
+                                            }
+                                            break;
+                                        case 2:
+                                            if (!loc2.destroyed)
+                                            {
+                                                vect1 = loc2.pos + new Vector2(25, 0);
+                                                validTarget = true;
+                                            }
+                                            break;
+                                        case 3:
+                                            if (!loc3.destroyed)
+                                            {
+                                                vect1 = loc3.pos + new Vector2(25, 0);
+                                                validTarget = true;
+                                            }
+                                            break;
+                                        case 4:
+                                            if (!loc4.destroyed)
+                                            {
+                                                vect1 = loc4.pos + new Vector2(25, 0);
+                                                validTarget = true;
+                                            }
+                                            break;
+                                        case 5:
+                                            if (!loc5.destroyed)
+                                            {
+                                                vect1 = loc5.pos + new Vector2(25, 0);
+                                                validTarget = true;
+                                            }
+                                            break;
+                                        case 6:
+                                            if (!loc6.destroyed)
+                                            {
+                                                vect1 = loc5.pos + new Vector2(25, 0);
+                                                validTarget = true;
+                                            }
+                                            break;
+                                    }
+                                    incomingTarget = random.Next(1, 7);
+                                }
+                                while (!validTarget2)
+                                {
+                                    switch (incomingTarget2)
+                                    {
+                                        case 1:
+                                            if (!loc1.destroyed)
+                                            {
+                                                vect2 = loc1.pos + new Vector2(25, 0);
+                                                validTarget2 = true;
+                                            }
+                                            break;
+                                        case 2:
+                                            if (!loc2.destroyed)
+                                            {
+                                                vect2 = loc2.pos + new Vector2(25, 0);
+                                                validTarget2 = true;
+                                            }
+                                            break;
+                                        case 3:
+                                            if (!loc3.destroyed)
+                                            {
+                                                vect2 = loc3.pos + new Vector2(25, 0);
+                                                validTarget2 = true;
+                                            }
+                                            break;
+                                        case 4:
+                                            if (!loc4.destroyed)
+                                            {
+                                                vect2 = loc4.pos + new Vector2(25, 0);
+                                                validTarget2 = true;
+                                            }
+                                            break;
+                                        case 5:
+                                            if (!loc5.destroyed)
+                                            {
+                                                vect2 = loc5.pos + new Vector2(25, 0);
+                                                validTarget2 = true;
+                                            }
+                                            break;
+                                        case 6:
+                                            if (!loc6.destroyed)
+                                            {
+                                                vect2 = loc5.pos + new Vector2(25, 0);
+                                                validTarget2 = true;
+                                            }
+                                            break;
+                                    }
+                                    incomingTarget2 = random.Next(1, 7);
+                                }
+                                inbound.Add(new Incoming(incomingSpeed, vect1, vect2));
+                                    incomingTime = 0;
+                                    remainingIncoming--;
+                                    Console.Beep(90, 75);
+                                    redirectCounter = 0;
+                            }
                         }
                         else if (!(loc1.destroyed && loc2.destroyed && loc3.destroyed && loc4.destroyed && loc5.destroyed && loc6.destroyed) && remainingIncoming == 0)
                         {
@@ -503,8 +652,9 @@ namespace MissileCommand
         public Vector2 target;
         Vector2 direction;
         float speed;
-        Vector2 actualTarget;
+        public Vector2 actualTarget;
         bool redirection = false;
+        public bool redirected = false;
 
         public Incoming(float newSpeed, Vector2 newTarget)
         {
@@ -534,11 +684,12 @@ namespace MissileCommand
         {
             pos -= new Vector2(direction.X * speed, direction.Y * speed);
 
-            if(redirection && pos.Y > 450)
+            if(redirection && pos.Y > 200)
             {
                 Vector2 v = pos - actualTarget;
                 direction = new Vector2(v.X / v.Length(), v.Y / v.Length());
                 redirection = false;
+                redirected = true;
             }
         }
 
