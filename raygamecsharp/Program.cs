@@ -477,6 +477,14 @@ namespace MissileCommand
                     if (loc1.destroyed && loc2.destroyed && loc3.destroyed && loc4.destroyed && loc5.destroyed && loc6.destroyed)
                     {
                         DrawText("GAME END", (screenWidth / 2) - 500, (screenHeight / 2) - 100, 200, new Raylib_cs.Color(100, 0, 0, 255));
+                        if (IsKeyPressed(Raylib_cs.KeyboardKey.KEY_ENTER))
+                        {
+                            if(highScore < score)
+                            {
+                                highScore = score;
+                            }
+                            inGame = false;
+                        }
                     }//the game over screen
                 }
                 else
@@ -497,6 +505,12 @@ namespace MissileCommand
                                     levelTime = 0;
                                     redirectCounter = 0;
                                     incomingDelay = 3f;
+                                    loc1.destroyed = false;
+                                    loc2.destroyed = false;
+                                    loc3.destroyed = false;
+                                    loc4.destroyed = false;
+                                    loc5.destroyed = false;
+                                    loc6.destroyed = false;
                                 }
                                 break;
                             case Menu.Quit:
