@@ -21,6 +21,8 @@ namespace MissileCommand
             return screenHeight;
         }
 
+        public enum Menu {Start, Quit, Score }
+
         public static int Main()
         {
             InitWindow(screenWidth, screenHeight, "Project");
@@ -51,7 +53,9 @@ namespace MissileCommand
             int redirectCounter = 0;
             float incomingDelay = 3f;
             bool inGame = false;
-
+            bool displayingScore = false;
+            Menu menu = Menu.Start;
+            int highScore = 0;
 
             while (!WindowShouldClose() && stillGoing)  // Game loop continues until ESC pressed, window closed, or the boolean becomes false
             {
@@ -77,7 +81,7 @@ namespace MissileCommand
 
                 BeginDrawing();
                 ClearBackground(BLACK);
-                DrawBackground(currentLevel, background, score);
+                DrawBackground(currentLevel, background, score, inGame);
 
                 if (inGame)
                 {
@@ -477,10 +481,65 @@ namespace MissileCommand
                 }
                 else
                 {
-                    if(IsMouseButtonPressed(Raylib_cs.MouseButton.MOUSE_LEFT_BUTTON))
+                    DrawTitle(menu, displayingScore, highScore);
+                    if(IsKeyPressed(Raylib_cs.KeyboardKey.KEY_ENTER))
                     {
-                        inGame = true;
+                        switch(menu)
+                        {
+                            case Menu.Start:
+                                {
+                                    inGame = true;
+                                    currentLevel = 1;
+                                    incomingTime = 0;
+                                    remainingIncoming = 20;
+                                    incomingSpeed = 4;
+                                    score = 0;
+                                    levelTime = 0;
+                                    redirectCounter = 0;
+                                    incomingDelay = 3f;
+                                }
+                                break;
+                            case Menu.Quit:
+                                stillGoing = false;
+                                break;
+                            case Menu.Score:
+                                displayingScore = !displayingScore;
+                                break;
+                        }
                     }
+                    if (!displayingScore)
+                    {
+                        if (IsKeyPressed(Raylib_cs.KeyboardKey.KEY_UP))
+                        {
+                            switch (menu)
+                            {
+                                case Menu.Start:
+                                    menu = Menu.Score;
+                                    break;
+                                case Menu.Quit:
+                                    menu = Menu.Start;
+                                    break;
+                                case Menu.Score:
+                                    menu = Menu.Quit;
+                                    break;
+                            }
+                        }
+                        if (IsKeyPressed(Raylib_cs.KeyboardKey.KEY_DOWN))
+                        {
+                            switch (menu)
+                            {
+                                case Menu.Start:
+                                    menu = Menu.Quit;
+                                    break;
+                                case Menu.Quit:
+                                    menu = Menu.Score;
+                                    break;
+                                case Menu.Score:
+                                    menu = Menu.Start;
+                                    break;
+                            }
+                        }
+                    }              
                 }//game hasn't started yet
 
 
@@ -493,16 +552,49 @@ namespace MissileCommand
 
             return 0;
         }
-
-        static void DrawBackground(int level, Raylib_cs.Color bgColor, int score)
+        static void DrawTitle(Menu menu, bool useScore, int score)
+        {
+            DrawText("Missile Command", 250, 0, 150, YELLOW);
+            if (!useScore)
+            {
+                switch (menu)
+                {
+                    case Menu.Start:
+                        DrawRectangle(710, 240, 180, 95, YELLOW);
+                        break;
+                    case Menu.Quit:
+                        DrawRectangle(710, 390, 180, 95, YELLOW);
+                        break;
+                    case Menu.Score:
+                        DrawRectangle(710, 540, 180, 95, YELLOW);
+                        break;
+                }
+                DrawRectangle(725, 250, 150, 75, new Raylib_cs.Color(200, 40, 0, 255));
+                DrawText("Start", 740, 275, 40, YELLOW);
+                DrawRectangle(725, 400, 150, 75, new Raylib_cs.Color(200, 40, 0, 255));
+                DrawText("Quit", 740, 425, 40, YELLOW);
+                DrawRectangle(725, 550, 150, 75, new Raylib_cs.Color(200, 40, 0, 255));
+                DrawText("High \nScore", 740, 550, 30, YELLOW);
+            }
+            else
+            {
+                DrawRectangle(600, 200, 400, 400, new Raylib_cs.Color(200, 40, 0, 255));
+                DrawText("The high score is:", 610, 250, 40, YELLOW);
+                DrawText(score.ToString(), 650, 325, 100, YELLOW);
+            }
+        }
+        static void DrawBackground(int level, Raylib_cs.Color bgColor, int score, bool drawScore)
         {
             DrawRectangle(0, screenHeight - 100, screenWidth, 100, bgColor);
             DrawRectangle(40, screenHeight - 150, 200, 50, bgColor);
             DrawRectangle(screenWidth - 240, screenHeight - 150, 200, 50, bgColor);
             DrawRectangle((screenWidth / 2) - 150, screenHeight - 175, 300, 75, bgColor);
-            DrawText("Level: " + level.ToString(), 0, 0, 40, YELLOW);
-            DrawText(score.ToString(), screenWidth / 2, 0, 40, YELLOW);
-        }
+            if (drawScore)
+            {
+                DrawText("Level: " + level.ToString(), 0, 0, 40, YELLOW);
+                DrawText(score.ToString(), screenWidth / 2, 0, 40, YELLOW);
+            }
+        }//draws the rectangles and GUI
     }//contains Main
 
     class GameObject
