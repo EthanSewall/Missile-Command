@@ -4,6 +4,7 @@ using static Raylib_cs.Raymath;
 using System.Numerics; 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace MissileCommand
 {
@@ -56,6 +57,10 @@ namespace MissileCommand
             bool displayingScore = false;
             Menu menu = Menu.Start;
             int highScore = 0;
+            if (File.Exists(Environment.CurrentDirectory + @"\highScore.txt"))
+            {
+                highScore = int.Parse(File.ReadAllText(Environment.CurrentDirectory + @"\highScore.txt"));
+            }
 
             while (!WindowShouldClose() && stillGoing)  // Game loop continues until ESC pressed, window closed, or the boolean becomes false
             {
@@ -482,6 +487,7 @@ namespace MissileCommand
                             if(highScore < score)
                             {
                                 highScore = score;
+                                File.WriteAllText(Environment.CurrentDirectory + @"\highScore.txt", highScore.ToString());
                             }
                             inGame = false;
                         }
